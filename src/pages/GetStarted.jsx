@@ -1,17 +1,15 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Dropdown from 'react-bootstrap/Dropdown';
-import { 
-  get_region, 
-  get_province, 
+import { Container, Card, Row, Col, Dropdown } from 'react-bootstrap';
+import {
+  get_region,
+  get_province,
   get_city_municipality,
   get_barangay,
   checkWeather,
-  checkForecast }
-from '../services/api';
+  checkForecast
+}
+  from '../services/api';
 
 
 const GetStarted = () => {
@@ -26,6 +24,8 @@ const GetStarted = () => {
 
   const [barangays, set_barangays] = useState([]);
   const [selected_barangay, set_selected_barangay] = useState(null);
+
+  const [weather, set_weather] = useState({})
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,15 +66,22 @@ const GetStarted = () => {
       try {
         const data = await get_barangay(selected_city_municipality);
         set_barangays(data.data || []);
-      } catch (error) { console.error(error); }
+
+        const weatherData = await checkWeather(selected_city_municipality);
+        set_weather(weatherData || {})
+
+      } catch (error) {
+        console.error(error);
+      }
     };
+
     fetchData();
   }, [selected_city_municipality]);
 
   return (
     <Container>
       <Row>
-        <Col>
+        <Col md={3}>
           <Dropdown onSelect={(val) => set_selected_region(val)}>
             <Dropdown.Toggle variant="success" id="dropdown-basic">
               {selected_region || "Select Region"}
@@ -113,36 +120,61 @@ const GetStarted = () => {
           </Dropdown>
           <Dropdown onSelect={(val) => set_selected_barangay(val)}>
             <Dropdown.Toggle variant="success" id="dropdown-basic">
-              {selected_barangay|| "Select Barangay"}
+              {selected_barangay || "Select Barangay"}
             </Dropdown.Toggle>
             <Dropdown.Menu>
               {barangays.map(barangay => (
-                <Dropdown.Item eventKey={barangay.name}  key={barangay.name}>
+                <Dropdown.Item eventKey={barangay.name} key={barangay.name}>
                   {barangay.name}
                 </Dropdown.Item>
               ))}
             </Dropdown.Menu>
           </Dropdown>
         </Col>
-        <Col>
+        <Col md={6}>
           <div className="ratio ratio-16x9">
-          {(selected_region && selected_province && selected_city_municipality && selected_barangay)? 
-          <Container>
-            <iframe
-              title="Location Map"
-              src={`https://google.com/maps?q=${selected_province},${selected_city_municipality},${selected_barangay || ""}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
-              style={{ border: 0, width: "100%", height: "450px" }}
-              allowFullScreen
-              loading="lazy">
-            </iframe>
-          </Container>
-             : <></>
-          }
-            
+            {(selected_region && selected_province && selected_city_municipality && selected_barangay) ?
+              <Container>
+                <iframe
+                  title="Location Map"
+                  src={`https://google.com/maps?q=${selected_province},${selected_city_municipality},${selected_barangay || ""}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                  style={{ border: 0, width: "100%", height: "450px" }}
+                  allowFullScreen
+                  loading="lazy">
+                </iframe>
+              </Container>
+              : <></>
+            }
+
           </div>
         </Col>
-      </Row>
-      <Row>
+        <Col md={3}>
+          <Card className="p-3">
+            <Row className="align-items-center">
+              <Col xs={8}>
+                <Card.Title className="small text-muted">Current Conditions</Card.Title>
+                <h2 className="fw-bold">
+                  {weather?.main ? `${Math.round(weather.main.temp)}°C` : "--"}
+                </h2>
+                <p className="text-capitalize mb-1">{weather?.weather?.[0]?.description}</p>
+                <div className="small text-muted">
+                  Humidity: {weather?.main?.humidity}% <br />
+                  Wind: {weather?.wind?.speed} km/h
+                </div>
+              </Col>
+              <Col xs={4} className="text-center">
+                {weather?.weather?.[0] && (
+                  <img
+                    src={`/images/${weather.weather[0].main.toLowerCase()}.png`}
+                    alt={weather.weather[0].main}
+                    style={{ width: '100%' }}
+                    onError={(e) => { e.target.src = '/images/clear.png'; }} // Fallback
+                  />
+                )}
+              </Col>
+            </Row>
+          </Card>
+        </Col>
 
       </Row>
     </Container>
