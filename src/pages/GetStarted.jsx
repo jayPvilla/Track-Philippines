@@ -26,6 +26,7 @@ const GetStarted = () => {
   const [selected_barangay, set_selected_barangay] = useState(null);
 
   const [weather, set_weather] = useState({})
+  const [forecast, set_forecast] = useState([])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -68,7 +69,10 @@ const GetStarted = () => {
         set_barangays(data.data || []);
 
         const weatherData = await checkWeather(selected_city_municipality);
-        set_weather(weatherData || {})
+        set_weather(weatherData || {});
+
+        const forecastData = await checkForecast(selected_city_municipality);
+        set_forecast(forecastData || []);
 
       } catch (error) {
         console.error(error);
@@ -81,7 +85,7 @@ const GetStarted = () => {
   return (
     <Container>
       <Row>
-        <Col md={3}>
+        <Col md={2}>
           <Dropdown onSelect={(val) => set_selected_region(val)}>
             <Dropdown.Toggle variant="success" id="dropdown-basic">
               {selected_region || "Select Region"}
@@ -131,25 +135,27 @@ const GetStarted = () => {
             </Dropdown.Menu>
           </Dropdown>
         </Col>
-        <Col md={6}>
+        <Col md={7}>
           <div className="ratio ratio-16x9">
             {(selected_region && selected_province && selected_city_municipality && selected_barangay) ?
               <Container>
                 <iframe
                   title="Location Map"
                   src={`https://google.com/maps?q=${selected_province},${selected_city_municipality},${selected_barangay || ""}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
-                  style={{ border: 0, width: "100%", height: "450px" }}
+                  style={{ border: 0, width: "100%", height: "700px" }}
                   allowFullScreen
                   loading="lazy">
                 </iframe>
               </Container>
-              : <></>
+              : <div className="bg-light d-flex align-items-center justify-content-center" style={{ height: "450px" }}>
+                <p className="text-muted">Please select a location to view the map.</p>
+              </div>
             }
 
           </div>
         </Col>
         <Col md={3}>
-          <Card className="p-3">
+          <Card className="p-3 mb-3 border-0 shadow-sm">
             <Row className="align-items-center">
               <Col xs={8}>
                 <Card.Title className="small text-muted">Current Conditions</Card.Title>
@@ -174,6 +180,33 @@ const GetStarted = () => {
               </Col>
             </Row>
           </Card>
+          <Row>
+            <Card className="p-3 mb-3 border-0 shadow-sm">
+              <Card.Title className="small text-muted">5 Day Forecast</Card.Title>
+              <Container className='d-flex flex-column'>
+                {forecast.map((f, index) => (
+                  <div
+                    key={index}
+                    className='d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom'
+                  >
+                    <p className="mb-0" style={{ width: '50px' }}>
+                      {new Date(f.dt_txt).toLocaleDateString('en-US', { weekday: 'short' })}
+                    </p>
+                    <img
+                      src={`/images/${f.weather[0].main.toLowerCase()}.png`}
+                      alt={f.weather[0].main}
+                      style={{ width: '25px' }}
+                      onError={(e) => { e.target.src = '/images/clear.png'; }}
+                    />
+                    <p className="fw-bold mb-0" style={{ width: '50px', textAlign: 'right' }}>
+                      {`${Math.round(f.main.temp)}°C`}
+                    </p>
+                    <p className='text-capitalize small text-muted'>{f.weather[0].description}</p>
+                  </div>
+                ))}
+              </Container>
+            </Card>
+          </Row>
         </Col>
 
       </Row>

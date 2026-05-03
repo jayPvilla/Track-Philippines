@@ -72,7 +72,8 @@ export const checkForecast = async (city) => {
             `https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&appid=${open_weather_api_key}`
         );
         const data = await response.json();
-        return data;
+        const dailyData = data.list.filter((item, index) => index % 8 === 0)
+        return dailyData.slice(0, 5);
     } catch (e){
         console.error(e);
     }
