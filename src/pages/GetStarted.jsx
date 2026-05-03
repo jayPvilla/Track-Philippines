@@ -4,7 +4,14 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { get_region, get_province, get_city_municipality, get_barangay } from '../services/api';
+import { 
+  get_region, 
+  get_province, 
+  get_city_municipality,
+  get_barangay,
+  checkWeather,
+  checkForecast }
+from '../services/api';
 
 
 const GetStarted = () => {
@@ -119,15 +126,24 @@ const GetStarted = () => {
         </Col>
         <Col>
           <div className="ratio ratio-16x9">
+          {(selected_region && selected_province && selected_city_municipality && selected_barangay)? 
+          <Container>
             <iframe
               title="Location Map"
               src={`https://google.com/maps?q=${selected_province},${selected_city_municipality},${selected_barangay || ""}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
               style={{ border: 0, width: "100%", height: "450px" }}
               allowFullScreen
-              loading="lazy"
-            ></iframe>
+              loading="lazy">
+            </iframe>
+          </Container>
+             : <></>
+          }
+            
           </div>
         </Col>
+      </Row>
+      <Row>
+
       </Row>
     </Container>
   )
