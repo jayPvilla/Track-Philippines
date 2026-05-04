@@ -87,170 +87,116 @@ const GetStarted = () => {
   }, [selected_city_municipality]);
 
   return (
-    <Container>
-      <Row>
-        <Col md={2}>
-          <Stack gap={3} className='align-content-center'>
-            <Dropdown onSelect={(val) => set_selected_region(val)}>
-              <Dropdown.Toggle variant="success" id="dropdown-basic">
-                {selected_region || "Select Region"}
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-                {regions.map(region => (
-                  <Dropdown.Item eventKey={region.name} key={region.name}>
-                    {region.name}
-                  </Dropdown.Item>
+    <Container fluid className="py-4 px-lg-5 bg-light">
+      <Row className="g-4">
+        {/* Left Column: Navigation & Filters */}
+        <Col lg={2}>
+          <Card className="border-0 shadow-sm p-3 h-100">
+            <h6 className="fw-bold mb-3 text-uppercase text-muted small">Location Filter</h6>
+            <Stack gap={3}>
+              {[
+                { label: selected_region || "Select Region", data: regions, setter: set_selected_region },
+                { label: selected_province || "Select Province", data: provinces, setter: set_selected_province },
+                { label: selected_city_municipality || "Select City", data: cities_municipalities, setter: set_selected_city_municipality },
+                { label: selected_barangay || "Select Barangay", data: barangays, setter: set_selected_barangay }
+              ].map((drop, idx) => (
+                <Dropdown onSelect={drop.setter} key={idx} className="w-100">
+                  <Dropdown.Toggle variant="outline-success" className="w-100 text-start d-flex justify-content-between align-items-center">
+                    <span className="text-truncate" style={{ maxWidth: '85%' }}>{drop.label}</span>
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu className="w-100 shadow-sm border-0" style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                    {drop.data.map(item => (
+                      <Dropdown.Item eventKey={item.name} key={item.name}>{item.name}</Dropdown.Item>
+                    ))}
+                  </Dropdown.Menu>
+                </Dropdown>
+              ))}
+            </Stack>
+          </Card>
+        </Col>
+
+        {/* Middle Column: Interactive Map */}
+        <Col lg={6}>
+          <Card className="border-0 shadow-sm h-100 overflow-hidden" style={{ minHeight: '600px' }}>
+            {selected_city_municipality ? (
+              <iframe
+                title="Location Map"
+                src={`https://google.com/maps?q=${selected_province},${selected_city_municipality},${selected_barangay || ""}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                style={{ border: 0, width: "100%", height: "100%" }}
+                allowFullScreen
+                loading="lazy"
+              />
+            ) : (
+              <div className="h-100 d-flex flex-column align-items-center justify-content-center text-muted bg-white">
+                <i className="bi bi-geo-alt fs-1 mb-2"></i>
+                <p>Please select a location to view the map.</p>
+              </div>
+            )}
+          </Card>
+        </Col>
+
+        {/* Right Column: Weather & Insights */}
+        <Col lg={4}>
+          <Stack gap={4}>
+            {/* Current Weather Card */}
+            <Card className="p-4 border-0 shadow-sm bg-white">
+              <div className="d-flex justify-content-between align-items-start">
+                <div>
+                  <p className="text-muted small fw-bold text-uppercase mb-1">Current Weather</p>
+                  <h1 className="display-5 fw-bold mb-0">
+                    {weather?.main ? `${Math.round(weather.main.temp)}°C` : "--"}
+                  </h1>
+                  <p className="text-capitalize text-success fw-semibold mb-0">{weather?.weather?.[0]?.description || "No data"}</p>
+                </div>
+                {weather?.weather?.[0] && (
+                  <img
+                    src={`/images/${weather.weather[0].main.toLowerCase()}.png`}
+                    alt="icon"
+                    style={{ width: '80px' }}
+                    onError={(e) => e.target.src = '/images/clear.png'}
+                  />
+                )}
+              </div>
+              <hr className="my-3 opacity-10" />
+              <Row className="text-center g-0">
+                <Col border-end>
+                  <small className="text-muted d-block">Humidity</small>
+                  <span className="fw-bold">{weather?.main?.humidity || 0}%</span>
+                </Col>
+                <Col>
+                  <small className="text-muted d-block">Wind Speed</small>
+                  <span className="fw-bold">{weather?.wind?.speed || 0} km/h</span>
+                </Col>
+              </Row>
+            </Card>
+
+            {/* Forecast Card */}
+            <Card className="p-4 border-0 shadow-sm bg-white">
+              <h6 className="fw-bold mb-4 text-uppercase text-muted small">5-Day Forecast</h6>
+              <Stack gap={2}>
+                {five_day_forecast.map((f, index) => (
+                  <div key={index} className="d-flex align-items-center py-2 border-bottom border-light last-child-border-0">
+                    <span className="text-muted" style={{ width: '60px' }}>
+                      {new Date(f.dt_txt).toLocaleDateString('en-US', { weekday: 'short' })}
+                    </span>
+                    <img
+                      src={`/images/${f.weather[0].main.toLowerCase()}.png`}
+                      alt="icon"
+                      className="mx-auto"
+                      style={{ width: '32px' }}
+                      onError={(e) => e.target.src = '/images/clear.png'}
+                    />
+                    <span className="fw-bold text-end" style={{ width: '60px' }}>{Math.round(f.main.temp)}°C</span>
+                    <span className="text-muted small text-end text-capitalize flex-grow-1">{f.weather[0].description}</span>
+                  </div>
                 ))}
-              </Dropdown.Menu>
-            </Dropdown>
-            <Dropdown onSelect={(val) => set_selected_province(val)}>
-              <Dropdown.Toggle variant="success" id="dropdown-basic">
-                {selected_province || "Select Province"}
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-                {provinces.map(province => (
-                  <Dropdown.Item eventKey={province.name} key={province.name}>
-                    {province.name}
-                  </Dropdown.Item>
-                ))}
-              </Dropdown.Menu>
-            </Dropdown>
-            <Dropdown onSelect={(val) => set_selected_city_municipality(val)}>
-              <Dropdown.Toggle variant="success" id="dropdown-basic">
-                {selected_city_municipality || "Select City/Municipality"}
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-                {cities_municipalities.map(city => (
-                  <Dropdown.Item eventKey={city.name} key={city.name}>
-                    {city.name}
-                  </Dropdown.Item>
-                ))}
-              </Dropdown.Menu>
-            </Dropdown>
-            <Dropdown onSelect={(val) => set_selected_barangay(val)}>
-              <Dropdown.Toggle variant="success" id="dropdown-basic">
-                {selected_barangay || "Select Barangay"}
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-                {barangays.map(barangay => (
-                  <Dropdown.Item eventKey={barangay.name} key={barangay.name}>
-                    {barangay.name}
-                  </Dropdown.Item>
-                ))}
-              </Dropdown.Menu>
-            </Dropdown>
+              </Stack>
+            </Card>
           </Stack>
         </Col>
-        <Col md={5}>
-          <div className="ratio ratio-16x9">
-            {(selected_region && selected_province && selected_city_municipality && selected_barangay) ?
-              <Container>
-                <iframe
-                  title="Location Map"
-                  src={`https://google.com/maps?q=${selected_province},${selected_city_municipality},${selected_barangay || ""}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
-                  style={{ border: 0, width: "100%", height: "700px" }}
-                  allowFullScreen
-                  loading="lazy">
-                </iframe>
-              </Container>
-              : <div className="bg-light d-flex align-items-center justify-content-center" style={{ height: "450px" }}>
-                <p className="text-muted">Please select a location to view the map.</p>
-              </div>
-            }
-
-          </div>
-        </Col>
-        <Col md={5}>
-          <Row>
-            <Col md={6}>
-              <Card className="p-3 mb-3 border-0 shadow-sm">
-                <Row className="align-items-center">
-                  <Col xs={8}>
-                    <Card.Title className="small text-muted">Current Conditions</Card.Title>
-                    <h2 className="fw-bold">
-                      {weather?.main ? `${Math.round(weather.main.temp)}°C` : "--"}
-                    </h2>
-                    <p className="text-capitalize mb-1">{weather?.weather?.[0]?.description}</p>
-                    <div className="small text-muted">
-                      Humidity: {weather?.main?.humidity}% <br />
-                      Wind: {weather?.wind?.speed} km/h
-                    </div>
-                  </Col>
-                  <Col xs={4} className="text-center">
-                    {weather?.weather?.[0] && (
-                      <img
-                        src={`/images/${weather.weather[0].main.toLowerCase()}.png`}
-                        alt={weather.weather[0].main}
-                        style={{ width: '100%' }}
-                        onError={(e) => { e.target.src = '/images/clear.png'; }} // Fallback
-                      />
-                    )}
-                  </Col>
-                </Row>
-              </Card>
-              <Row>
-                <Card className="p-3 mb-3 border-0 shadow-sm">
-                  <Card.Title className="small text-muted">5 Day Forecast</Card.Title>
-                  <Container className='d-flex flex-column'>
-                    {five_day_forecast.map((f, index) => (
-                      <div
-                        key={index}
-                        className='d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom'
-                      >
-                        <p className="mb-0" style={{ width: '50px' }}>
-                          {new Date(f.dt_txt).toLocaleDateString('en-US', { weekday: 'short' })}
-                        </p>
-                        <img
-                          src={`/images/${f.weather[0].main.toLowerCase()}.png`}
-                          alt={f.weather[0].main}
-                          style={{ width: '44px' }}
-                          onError={(e) => { e.target.src = '/images/clear.png'; }}
-                        />
-                        <p className="fw-bold mb-0" style={{ width: '50px', textAlign: 'right' }}>
-                          {`${Math.round(f.main.temp)}°C`}
-                        </p>
-                        <p className='text-capitalize small text-muted' style={{ width: '60px', textAlign: 'right' }}>{f.weather[0].description}</p>
-                      </div>
-                    ))}
-                  </Container>
-                </Card>
-              </Row>
-            </Col>
-            <Col md={6}>
-              <Row>
-                <Card className="p-3 mb-3 border-0 shadow-sm">
-                  <Card.Title className="small text-muted">Next Hours Forecast</Card.Title>
-                  <Container className='d-flex flex-column'>
-                    {one_day_forecast.map((f, index) => (
-                      <div
-                        key={index}
-                        className='d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom'
-                      >
-                        <p className="mb-0" style={{ width: '50px' }}>
-                          {new Date(f.dt_txt).toLocaleDateString('en-US', { weekday: 'short' })}
-                        </p>
-                        <img
-                          src={`/images/${f.weather[0].main.toLowerCase()}.png`}
-                          alt={f.weather[0].main}
-                          style={{ width: '44px' }}
-                          onError={(e) => { e.target.src = '/images/clear.png'; }}
-                        />
-                        <p className="fw-bold mb-0" style={{ width: '50px', textAlign: 'right' }}>
-                          {`${Math.round(f.main.temp)}°C`}
-                        </p>
-                        <p className='text-capitalize small text-muted' style={{ width: '60px', textAlign: 'right' }}>{f.weather[0].description}</p>
-                      </div>
-                    ))}
-                  </Container>
-                </Card>
-              </Row>
-            </Col>
-          </Row>
-        </Col>
-
       </Row>
     </Container>
-  )
+  );
 }
 
 export default GetStarted
