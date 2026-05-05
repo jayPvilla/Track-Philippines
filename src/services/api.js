@@ -76,7 +76,7 @@ export const checkForecast = async (city, type) => {
             const five_day_data = data.list.filter((item, index) => index % 8 === 0)
             return five_day_data.slice(0, 5);
         } else {
-            const one_day_data = data.list.filter((item, index) => index % 3 === 0)
+            const one_day_data = data.list
             return one_day_data.slice(0, 8);
         }
     } catch (e){

@@ -87,7 +87,7 @@ const GetStarted = () => {
   }, [selected_city_municipality]);
 
   return (
-    <Container fluid className="py-4 px-lg-5 bg-light">
+    <Container fluid className="py-4 px-lg-5 bg-light bg-transparent">
       <Row className="g-4">
         {/* Left Column: Navigation & Filters */}
         <Col lg={2}>
@@ -111,27 +111,41 @@ const GetStarted = () => {
                   </Dropdown.Menu>
                 </Dropdown>
               ))}
+              {weather.coord && (
+                <Card className='border-0 align-items-start pt-4'>
+                  <h6 className="fw-bold mb-3 text-uppercase text-muted small">Coordinates</h6>
+                  <span className="text-muted small text-end text-capitalize flex-grow-1">Longitude: {weather?.coord?.lon}</span>
+                  <span className="text-muted small text-end text-capitalize flex-grow-1">Latitude: {weather?.coord?.lon}</span>
+                </Card>
+              )
+              }
+
             </Stack>
           </Card>
         </Col>
 
         {/* Middle Column: Interactive Map */}
         <Col lg={6}>
-          <Card className="border-0 shadow-sm h-100 overflow-hidden" style={{ minHeight: '600px' }}>
-            {selected_city_municipality ? (
-              <iframe
-                title="Location Map"
-                src={`https://google.com/maps?q=${selected_province},${selected_city_municipality},${selected_barangay || ""}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
-                style={{ border: 0, width: "100%", height: "100%" }}
-                allowFullScreen
-                loading="lazy"
-              />
-            ) : (
-              <div className="h-100 d-flex flex-column align-items-center justify-content-center text-muted bg-white">
-                <i className="bi bi-geo-alt fs-1 mb-2"></i>
-                <p>Please select a location to view the map.</p>
-              </div>
-            )}
+          <Card className="border-0 shadow-sm h-100 p-4 overflow-hidden" style={{ minHeight: '600px' }}>
+            <Card.Title>
+              <p className="text-muted small fw-bold text-uppercase mb-1">Map</p>
+            </Card.Title>
+            <Card.Body>
+              {selected_city_municipality ? (
+                <iframe
+                  title="Location Map"
+                  src={`https://google.com/maps?q=${selected_province},${selected_city_municipality},${selected_barangay || ""}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                  style={{ border: 0, width: "100%", height: "100%" }}
+                  allowFullScreen
+                  loading="lazy"
+                />
+              ) : (
+                <div className="h-100 d-flex flex-column align-items-center justify-content-center text-muted bg-white">
+                  <i className="bi bi-geo-alt fs-1 mb-2"></i>
+                  <p>Please select a location to view the map.</p>
+                </div>
+              )}
+            </Card.Body>
           </Card>
         </Col>
 
@@ -159,13 +173,27 @@ const GetStarted = () => {
               </div>
               <hr className="my-3 opacity-10" />
               <Row className="text-center g-0">
-                <Col border-end>
-                  <small className="text-muted d-block">Humidity</small>
-                  <span className="fw-bold">{weather?.main?.humidity || 0}%</span>
+                <Col>
+                  <Row className="text-center g-3 align-items-center">
+                    <Col className='d-flex justify-content-end'>
+                      <i className="bi bi-moisture display-6"></i>
+                    </Col>
+                    <Col className='d-flex justify-content-start'>
+                      <small className="text-muted d-block">Humidity</small>
+                      <span className="fw-bold">{weather?.main?.humidity || 0}%</span>
+                    </Col>
+                  </Row>
                 </Col>
                 <Col>
-                  <small className="text-muted d-block">Wind Speed</small>
-                  <span className="fw-bold">{weather?.wind?.speed || 0} km/h</span>
+                  <Row className="text-center g-3 align-items-center">
+                    <Col className='d-flex justify-content-end'>
+                      <i className="bi bi-wind display-6"></i>
+                    </Col>
+                    <Col>
+                      <small className="text-muted d-block">Wind Speed</small>
+                      <span className="fw-bold">{weather?.wind?.speed || 0} km/h</span>
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
             </Card>
@@ -194,6 +222,35 @@ const GetStarted = () => {
             </Card>
           </Stack>
         </Col>
+      </Row>
+      <Row className='mt-4'>
+        <Card className="p-4 border-0 shadow-sm bg-white">
+          <Col>
+            <h6 className="fw-bold mb-4 text-uppercase text-muted small">Next 8 Hours Forecast</h6>
+          </Col>
+          <Row>
+            {one_day_forecast.map((f, index) => (
+              <Col>
+                <Card>
+                  <Card.Body style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span className="text-muted" style={{ width: '60px' }}>
+                      {new Date(f.dt_txt).toLocaleDateString('en-US', { weekday: 'short' })}
+                    </span>
+                    <img
+                      src={`/images/${f.weather[0].main.toLowerCase()}.png`}
+                      alt="icon"
+                      className="mx-auto"
+                      style={{ width: '32px' }}
+                      onError={(e) => e.target.src = '/images/clear.png'}
+                    />
+                    <span className="fw-bold text-end" style={{ width: '60px' }}>{Math.round(f.main.temp)}°C</span>
+                    <span className="text-muted small text-end text-capitalize flex-grow-1">{f.weather[0].description}</span>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        </Card>
       </Row>
     </Container>
   );
