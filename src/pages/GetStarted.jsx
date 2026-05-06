@@ -128,7 +128,7 @@ const GetStarted = () => {
         <Col lg={6}>
           <Card className="border-0 shadow-sm h-100 p-4 overflow-hidden" style={{ minHeight: '600px' }}>
             <Card.Title>
-              <p className="text-muted small fw-bold text-uppercase mb-1">Map</p>
+              <p className="text-muted small fw-bold text-uppercase mb-1">Interactive Map</p>
             </Card.Title>
             <Card.Body>
               {selected_city_municipality ? (
@@ -141,7 +141,7 @@ const GetStarted = () => {
                 // />
                 <iframe
                   title="Location Map"s
-                  src={`https://embed.ventusky.com/?p=${weather?.coord?.lat};${weather?.coord?.lon};{1}&l=temperature-2m`}
+                  src={`https://embed.ventusky.com/?p=${weather?.coord?.lat};${weather?.coord?.lon};10&l=temperature-2m`}
                   style={{ border: 0, width: "100%", height: "100%" }}
                   allowFullScreen
                   loading="lazy"
