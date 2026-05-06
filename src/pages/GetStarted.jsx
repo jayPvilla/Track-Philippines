@@ -91,7 +91,7 @@ const GetStarted = () => {
       <Row className="g-4">
         {/* Left Column: Navigation & Filters */}
         <Col lg={2}>
-          <Card className="border-0 shadow-sm p-3 h-100">
+          <Card className="border-0 shadow-sm p-3 h-75">
             <h6 className="fw-bold mb-3 text-uppercase text-muted small">Location Filter</h6>
             <Stack gap={3}>
               {[
@@ -226,25 +226,28 @@ const GetStarted = () => {
       <Row className='mt-4'>
         <Card className="p-4 border-0 shadow-sm bg-white">
           <Col>
-            <h6 className="fw-bold mb-4 text-uppercase text-muted small">Next 8 Hours Forecast</h6>
+            <h6 className="fw-bold mb-4  text-uppercase text-muted small">24 HOURS FORECAST</h6>
           </Col>
           <Row>
             {one_day_forecast.map((f, index) => (
               <Col>
-                <Card>
-                  <Card.Body style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span className="text-muted" style={{ width: '60px' }}>
+                <Card className='border-success'>
+                  <Card.Body style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <span className="text-muted text-center fw-bold">
                       {new Date(f.dt_txt).toLocaleDateString('en-US', { weekday: 'short' })}
+                    </span>
+                    <span className="text-muted text-center small" style={{ width: '80px' }}>
+                      {new Date(f.dt_txt).toLocaleTimeString()}
                     </span>
                     <img
                       src={`/images/${f.weather[0].main.toLowerCase()}.png`}
                       alt="icon"
                       className="mx-auto"
-                      style={{ width: '32px' }}
+                      style={{ width: '50px' }}
                       onError={(e) => e.target.src = '/images/clear.png'}
                     />
-                    <span className="fw-bold text-end" style={{ width: '60px' }}>{Math.round(f.main.temp)}°C</span>
-                    <span className="text-muted small text-end text-capitalize flex-grow-1">{f.weather[0].description}</span>
+                    <span className="fw-bold text-center" style={{ width: '60px' }}>{Math.round(f.main.temp)}°C</span>
+                    <span className="text-muted small text-center text-capitalize flex-grow-1">{f.weather[0].description}</span>
                   </Card.Body>
                 </Card>
               </Col>
