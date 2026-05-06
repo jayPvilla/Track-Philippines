@@ -115,7 +115,7 @@ const GetStarted = () => {
                 <Card className='border-0 align-items-start pt-4'>
                   <h6 className="fw-bold mb-3 text-uppercase text-muted small">Coordinates</h6>
                   <span className="text-muted small text-end text-capitalize flex-grow-1">Longitude: {weather?.coord?.lon}</span>
-                  <span className="text-muted small text-end text-capitalize flex-grow-1">Latitude: {weather?.coord?.lon}</span>
+                  <span className="text-muted small text-end text-capitalize flex-grow-1">Latitude: {weather?.coord?.lat}</span>
                 </Card>
               )
               }
@@ -132,9 +132,16 @@ const GetStarted = () => {
             </Card.Title>
             <Card.Body>
               {selected_city_municipality ? (
+                // <iframe
+                //   title="Location Map"
+                //   src={`https://google.com/maps?q=${selected_province || ""},${selected_city_municipality || ""},${selected_barangay || ""}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                //   style={{ border: 0, width: "100%", height: "100%" }}
+                //   allowFullScreen
+                //   loading="lazy"
+                // />
                 <iframe
-                  title="Location Map"
-                  src={`https://google.com/maps?q=${selected_province},${selected_city_municipality},${selected_barangay || ""}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                  title="Location Map"s
+                  src={`https://embed.ventusky.com/?p=${weather?.coord?.lat};${weather?.coord?.lon};{1}&l=temperature-2m`}
                   style={{ border: 0, width: "100%", height: "100%" }}
                   allowFullScreen
                   loading="lazy"
