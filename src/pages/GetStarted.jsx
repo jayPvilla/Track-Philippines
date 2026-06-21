@@ -106,7 +106,7 @@ const GetStarted = () => {
                   </Dropdown.Toggle>
                   <Dropdown.Menu className="w-100 shadow-sm border-0" style={{ maxHeight: '300px', overflowY: 'auto' }}>
                     {drop.data.map(item => (
-                      <Dropdown.Item eventKey={item.name} key={item.name}>{item.name}</Dropdown.Item>
+                      <Dropdown.Item eventKey={item.name} key={item.code}>{item.name}</Dropdown.Item>
                     ))}
                   </Dropdown.Menu>
                 </Dropdown>
