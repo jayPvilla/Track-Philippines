@@ -87,7 +87,7 @@ const Weather_Forecast = () => {
   }, [selected_city_municipality]);
 
   return (
-    <Container fluid className="py-4 px-lg-5 bg-light bg-transparent">
+    <Container fluid className="py-4 px-lg-5 bg-light bg-transparent main-content">
       <Row className="g-4">
         {/* Left Column: Navigation & Filters */}
         <Col lg={2}>

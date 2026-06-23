@@ -18,7 +18,7 @@ function App() {
   return (
     <Router>
       {/* Navigation Bar */}
-      <Navbar expand="lg" className="bg-success text-white">
+      <Navbar expand="lg" className="bg-success text-white navigation-bar">
         <Container>
           <Navbar.Brand className="text-white"  as={Link} to="/">Track Philippines</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
